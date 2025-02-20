@@ -1,7 +1,7 @@
 package org.example;
 
-public class Admin {
+public class Admin extends User{
 
-    public void adicionarProduto(Item produto, Estoque estoque) { /* lógica */ }
-    public void removerProduto(Item produto, Estoque estoque) { /* lógica */ }
+    public void addItem(Item item, Stock stock) { /* lógica */ }
+    public void removeItem(Item item, Stock stock) { /* lógica */ }
 }
