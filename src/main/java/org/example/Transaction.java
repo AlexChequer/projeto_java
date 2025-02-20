@@ -1,6 +1,6 @@
 package org.example;
 
-import java.util.LocalDateTime;
+import java.time.LocalDateTime;
 
 public class Transaction {
     private String paymentType;
