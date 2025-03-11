@@ -1,10 +1,11 @@
-package org.example;
+package org.example.user;
 
 public class User {
     private int id;
     private String name;
     private String email;
     private String password;
+    private enum role {ADMIN, CLIENT};
 
     public int getId() {
         return id;

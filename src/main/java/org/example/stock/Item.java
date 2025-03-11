@@ -1,4 +1,4 @@
-package org.example;
+package org.example.stock;
 
 
 public class Item {
@@ -6,6 +6,7 @@ public class Item {
     private String name;
     private double price;
     private int stock;
+    private Category type;
 
     public int getId() {
         return id;

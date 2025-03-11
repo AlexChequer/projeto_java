@@ -1,7 +1,8 @@
 package org.example;
 
-public class Admin extends User{
+import org.example.stock.Item;
+import org.example.user.User;
 
-    public void addItem(Item item, Stock stock) { /* lógica */ }
-    public void removeItem(Item item, Stock stock) { /* lógica */ }
+public class Admin extends User {
+
 }

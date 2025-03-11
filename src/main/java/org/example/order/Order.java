@@ -1,5 +1,9 @@
-package org.example;
+package org.example.order;
 
+import org.example.client.Client;
+import org.example.stock.Item;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Order {
@@ -7,6 +11,9 @@ public class Order {
     private Client client;
     private List<Item> items;
     private double total;
+    private String paymentType;
+    private LocalDateTime paymentDate;
+    private float paymentAmount;
 
     public int getId() {
         return id;
@@ -17,11 +24,11 @@ public class Order {
     }
 
     public Client getClient() {
-        return cliente;
+        return client;
     }
 
     public void setClient(Client cliente) {
-        this.cliente = cliente;
+        this.client = cliente;
     }
 
     public List<Item> getItem() {

@@ -1,4 +1,6 @@
-package org.example;
+package org.example.client;
+
+import org.example.stock.Item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,6 @@ public class Cart {
 
     }
     public double Total() {
-
+        return 0;
     }
 }
