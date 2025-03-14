@@ -1,7 +1,10 @@
 package org.example.stock;
 
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 
+@Service
 public class ItemService {
     private HashMap<Integer, Item> stock;
 
