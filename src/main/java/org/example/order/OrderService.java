@@ -33,6 +33,11 @@ public class OrderService {
             order.setItem(newItem);
         }
 
+        order.setTotal(0);
+        for (Item orderItems: order.getItems()) {
+            order.setTotal(order.getTotal() + orderItems.getPrice());
+        }
+
         orders.put(client.getId(), order);
     }
 
