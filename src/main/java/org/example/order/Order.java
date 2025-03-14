@@ -4,6 +4,7 @@ import org.example.client.Client;
 import org.example.stock.Item;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
@@ -14,6 +15,12 @@ public class Order {
     private String paymentType;
     private LocalDateTime paymentDate;
     private float paymentAmount;
+
+    public Order(int id) {
+        this.id = id;
+        this.items = new ArrayList<>();
+        this.total = 0;
+    }
 
     public int getId() {
         return id;
@@ -31,12 +38,21 @@ public class Order {
         this.client = cliente;
     }
 
-    public List<Item> getItem() {
+    public List<Item> getItems() {
         return items;
     }
 
-    public void setItem(List<Item> items) {
-        this.items = items;
+    public Item getItem(int id) {
+        for (Item item : items) {
+            if (item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public void setItem(Item item) {
+        this.items.add(item);
     }
 
     public double getTotal() {
