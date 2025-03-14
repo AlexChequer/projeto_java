@@ -5,4 +5,13 @@ import org.example.user.User;
 public class Client extends User {
     private Cart cart;
 
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
+
 }
