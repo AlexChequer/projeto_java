@@ -1,12 +1,16 @@
 package org.example.client;
 
 
+import org.example.client.exception.ClientNotFoundException;
+import org.example.common.exception.EmailRequiredException;
+import org.example.common.exception.NameRequiredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 public class ClientController {
@@ -15,47 +19,65 @@ public class ClientController {
     private ClientService clientservice;
 
     @GetMapping("/client")
-    public HashMap<Integer, Client> getClients() {
-        return clientservice.getClients();
+    public ResponseEntity<HashMap<Integer, Client>> getClients() { // aq define q o response entity espera esse tipo
+
+        HashMap<Integer, Client> clients = clientservice.getClients();
+
+        if (clients.isEmpty())
+        {
+            throw new ClientNotFoundException("no clients found");
+        }
+        return ResponseEntity.ok(clients);
     }
 
     @PostMapping("/client")
     @ResponseStatus(HttpStatus.CREATED)
-    public String saveClient(@RequestBody Client client) {
+    public ResponseEntity<Client> saveClient(@RequestBody Client client) {
         if (client.getName() == null) {
-            return "Name cannot be null";
+            throw new NameRequiredException("name cant be null");
         }
 
         if (client.getEmail() == null) {
-            return "Email cannot be null";
+            throw new EmailRequiredException("email cannot be null");
         }
 
-        clientservice.saveClient(client);
-        return "Cliente saved successfully";
+        Client newClient = clientservice.saveClient(client);
+
+        URI location = URI.create("/client/" + newClient.getId());
+        return ResponseEntity.created(location).body(newClient);
     }
 
     @GetMapping("/client/{id}")
-    public Client getClient(@PathVariable Integer id) {
-        return clientservice.getClient(id);
+    public ResponseEntity<Client> getClient(@PathVariable Integer id) {
+        Client client = clientservice.getClient(id);
+        if (client == null)
+        {
+            throw new ClientNotFoundException("client not found");
+        } else
+        {
+            return ResponseEntity.ok(client);
+        }
     }
 
     @DeleteMapping("/client/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public String deleteClient(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {
         Client client = clientservice.removeClient(id);
-        if (client != null) {
-            return "Client removed successfully";
+        if (client == null)
+        {
+            throw new ClientNotFoundException("client not found");
         }
-        return "Client not found";
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("client/{id}")
-    public String updateClient(@PathVariable Integer id, @RequestBody Client client) {
+    public ResponseEntity<Client> updateClient(@PathVariable Integer id, @RequestBody Client client) {
         Client updatedClient = clientservice.updateClient(id, client);
-        if (updatedClient != null) {
-            return "Client updated successfully";
+        if (updatedClient == null)
+        {
+            throw new ClientNotFoundException("client not found");
         }
-        return "Client not found";
+        return ResponseEntity.ok(updatedClient);
     }
 }
 
