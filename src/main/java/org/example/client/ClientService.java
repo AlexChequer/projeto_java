@@ -17,13 +17,14 @@ public class ClientService {
     }
 
 
-    public void saveClient(Client client) {
+    public Client saveClient(Client client) {
         if (client.getId() == 0) {
             // geração de ID
             int newId = clients.size() + 1;
             client.setId(newId);
         }
         clients.put(client.getId(), client);
+        return client;
     }
 
 
