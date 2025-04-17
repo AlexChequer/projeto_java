@@ -1,16 +1,18 @@
 package org.example.stock;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Item {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private double price;
     private int stock;
+    @ManyToOne
+    @JoinColumn
     private Category type;
 
     public int getId() {

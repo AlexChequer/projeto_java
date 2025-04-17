@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class ItemController {
@@ -12,7 +13,7 @@ public class ItemController {
     private ItemService itemservice;
 
     @GetMapping("/item")
-    public HashMap<Integer, Item> getItens() {
+    public List<Item> getItens() {
         return itemservice.getItens();
     }
 
@@ -28,8 +29,8 @@ public class ItemController {
     }
 
     @PutMapping("/item/{id}")
-    public String putItem(@PathVariable int id) {
-        itemservice.putItem(id);
+    public String putItem(@PathVariable int id, @RequestBody Item item) {
+        itemservice.putItem(id, item);
         return "";
     }
 

@@ -1,40 +1,53 @@
 package org.example.stock;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class ItemService {
-    private HashMap<Integer, Item> stock;
+    @Autowired
+    ItemRepository itemRepository;
 
-    public HashMap<Integer, Item> getItens() {
-        return stock;
+    public List<Item> getItens() {
+        return itemRepository.findAll();
     }
 
     public Item getItem(int id) {
-        for (Item item: stock.values()) {
-            if (item.getId() == id) {
-                return item;
-            }
-        }
-        return null;
+        return itemRepository.findById(id).
+                orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    public void postItem(Item item) {
-        stock.put(item.getId(), item);
+    public Item postItem(Item item) {
+        return itemRepository.save(item);
     }
 
     public void deleteItem(int id) {
-        for (Item v: stock.values()) {
-            if (id == v.getId()) {
-                stock.remove(v);
-            }
-        }
+        itemRepository.deleteById(id);
     }
 
-    public void putItem(int id) {
+    public Item putItem(int id, Item item) {
+        Item editItem = getItem(id);
 
+        if (editItem != null) {
+            if (item.getPrice() != 0) {
+                editItem.setPrice(item.getPrice());
+            }
+            if (item.getStock() != 0) {
+                editItem.setStock(item.getStock());
+            }
+            if (item.getName() !=null) {
+                editItem.setName(item.getName());
+            }
+
+        }
+
+        return itemRepository.save(editItem);
     }
 
 }
