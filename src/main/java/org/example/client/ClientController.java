@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class ClientController {
@@ -19,9 +20,9 @@ public class ClientController {
     private ClientService clientservice;
 
     @GetMapping("/client")
-    public ResponseEntity<HashMap<Integer, Client>> getClients() { // aq define q o response entity espera esse tipo
+    public ResponseEntity<List<Client>> getClients() { // aq define q o response entity espera esse tipo
 
-        HashMap<Integer, Client> clients = clientservice.getClients();
+        List<Client> clients = clientservice.getClients();
 
         if (clients.isEmpty())
         {
@@ -62,12 +63,12 @@ public class ClientController {
     @DeleteMapping("/client/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {
-        Client client = clientservice.removeClient(id);
-        if (client == null)
-        {
-            throw new ClientNotFoundException("client not found");
+        try {
+            clientservice.removeClient(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            throw new ClientNotFoundException("not found");
         }
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("client/{id}")

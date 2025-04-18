@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class AdminController {
@@ -17,8 +18,8 @@ public class AdminController {
     AdminService adminService;
 
     @GetMapping("/admin")
-    public ResponseEntity<HashMap<Integer, Admin>> getAdmins() {
-        HashMap<Integer, Admin> admins = adminService.getAdmins();
+    public ResponseEntity<List<Admin>> getAdmins() {
+        List<Admin> admins = adminService.getAdmins();
 
         if (admins.isEmpty())
         {
@@ -57,10 +58,10 @@ public class AdminController {
 
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable int id) {
-        Admin deleted = adminService.deleteAdmin(id);
-        if (deleted != null) {
-            return ResponseEntity.noContent().build(); // 204
-        } else {
+        try {
+            adminService.deleteAdmin(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
             throw new AdminNotFoundException("admin not found");
         }
     }
