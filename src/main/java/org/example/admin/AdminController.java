@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
+import java.net.URI;
 
 @RestController
 public class AdminController {
@@ -61,9 +60,20 @@ public class AdminController {
         try {
             adminService.deleteAdmin(id);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
+        } catch (org.springframework.dao.EmptyResultDataAccessException ex) {
             throw new AdminNotFoundException("admin not found");
         }
+    }
+
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<Admin> updateAdmin(@PathVariable int id, @RequestBody Admin admin) {
+        Admin existing = adminService.getAdmin(id);
+        if (existing == null) {
+            throw new AdminNotFoundException("admin not found");
+        }
+        admin.setId(id);
+        Admin updated = adminService.saveAdmin(admin);
+        return ResponseEntity.ok(updated);
     }
 }
 
