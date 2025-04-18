@@ -1,6 +1,10 @@
 package org.example.client;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,40 +13,35 @@ import java.util.List;
 @Service
 public class ClientService {
 
-    private HashMap<Integer, Client> clients = new HashMap<>();
+    @Autowired
+    private ClientRepository clientRepository;
 
-
-    public HashMap<Integer, Client> getClients() {
-        return clients;
+    public List<Client> getClients() {
+        return clientRepository.findAll();
     }
 
 
     public Client saveClient(Client client) {
-        if (client.getId() == 0) {
-            // geração de ID
-            int newId = clients.size() + 1;
-            client.setId(newId);
-        }
-        clients.put(client.getId(), client);
-        return client;
+
+        return clientRepository.save(client);
     }
 
 
     public Client getClient(Integer id) {
-        return clients.get(id);
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 
-    public Client removeClient(Integer id) {
-        return clients.remove(id);
+    public void removeClient(Integer id) {
+        clientRepository.deleteById(id);
     }
 
     public Client updateClient(Integer id, Client client) {
-        if (clients.containsKey(id)) {
-            // Força o ID do objeto a ser o mesmo da URL
-            clients.put(id, client);
-            return client;
+        Client client_found = this.getClient(id);
+        if (client == null) {
+            return null;
         }
-        return null;
+        return clientRepository.save(client);
     }
 }
