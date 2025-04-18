@@ -3,62 +3,80 @@ package org.example.order;
 import org.example.client.Client;
 import org.example.client.ClientService;
 import org.example.stock.Item;
-import org.example.stock.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class OrderService {
-    private HashMap<Integer, Order> orders = new HashMap<>();
+
+    private final OrderRepository orderRepository;
+    private final ClientService clientService;
 
     @Autowired
-    private ClientService clientservice;
+    public OrderService(OrderRepository orderRepository,
+                        ClientService clientService) {
+        this.orderRepository = orderRepository;
+        this.clientService   = clientService;
+    }
 
-    public void insertItem (Item item, int clientId) {
-        Client client = clientservice.getClient(clientId);
-        Order order = orders.get(client.getId());
+    public void insertItem(Item payload, int clientId) {
+        Client client = clientService.getClient(clientId);
+
+        Order order = null;
+        List<Order> all = orderRepository.findAll();  // busca todos os pedidos do BD :contentReference[oaicite:0]{index=0}
+        for (Order o : all) {
+            if (o.getClient().getId() == clientId) {
+                order = o;
+                break;
+            }
+        }
         if (order == null) {
             order = new Order(clientId);
             order.setClient(client);
         }
-        Item existingItem = order.getItem(item.getId());
-        if (existingItem != null) {
-            existingItem.setStock(existingItem.getStock() + item.getStock());
-            existingItem.setPrice(existingItem.getPrice() + item.getPrice()*item.getStock());
+
+        Item existing = order.getItem(payload.getId());
+        if (existing != null) {
+            existing.setStock(existing.getStock() + payload.getStock());
+            existing.setPrice(
+                    existing.getPrice() +
+                            payload.getPrice() * payload.getStock()
+            );
         } else {
-            Item newItem = item;
-            newItem.setPrice(item.getStock()*item.getPrice());
-            order.setItem(newItem);
+            payload.setPrice(payload.getPrice() * payload.getStock());
+            order.setItem(payload);
         }
 
-        order.setTotal(0);
-        for (Item orderItems: order.getItems()) {
-            order.setTotal(order.getTotal() + orderItems.getPrice());
+        double soma = 0;
+        for (Item it : order.getItems()) {
+            soma += it.getPrice();
         }
+        order.setTotal(soma);
 
-        orders.put(client.getId(), order);
+        orderRepository.save(order);
     }
 
     public void deleteOrder(int id) {
-        for (int i: orders.keySet()) {
-            if (i == id) {
-                orders.remove(i);
-            }
-        }
+        orderRepository.deleteById(id);
     }
 
-    public HashMap<Integer, Order> getOrders() {
-        return this.orders;
+    public Map<Integer, Order> getOrders() {
+        Map<Integer, Order> map = new HashMap<>();
+        List<Order> all = orderRepository.findAll();
+        for (Order o : all) {
+            map.put(o.getClient().getId(), o);
+        }
+        return map;
     }
 
     public Order getOrder(int id) {
-        for (int i: this.orders.keySet()) {
-            if (i == id) {
-                return orders.get(i);
-            }
-        }
-        return null;
+        return orderRepository.findById(id).orElse(null);
     }
 }

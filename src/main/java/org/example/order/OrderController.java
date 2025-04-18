@@ -1,39 +1,42 @@
 package org.example.order;
 
-import org.example.client.Client;
 import org.example.stock.Item;
-import org.example.stock.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/order")
 public class OrderController {
 
+    private final OrderService orderService;
+
     @Autowired
-    private OrderService orderservice;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
-    @PostMapping("/order/{clientId}")
+    @PostMapping("/{clientId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void insertItem(@RequestBody Item item, @PathVariable int clientId) {
-        orderservice.insertItem(item, clientId);
+    public void insertItem(@RequestBody Item item,
+                           @PathVariable int clientId) {
+        orderService.insertItem(item, clientId);
     }
 
-    @DeleteMapping("/order/{id}")
+    @DeleteMapping("/{id}")
     public void deleteOrder(@PathVariable int id) {
-        orderservice.deleteOrder(id);
+        orderService.deleteOrder(id);
     }
 
-    @GetMapping("/order")
-    public HashMap<Integer, Order> getOrders() {
-        return orderservice.getOrders();
+    @GetMapping
+    public Map<Integer, Order> getOrders() {
+        return orderService.getOrders();
     }
 
-    @GetMapping("/order/{id}")
+    @GetMapping("/{id}")
     public Order getOrder(@PathVariable int id) {
-        return orderservice.getOrder(id);
+        return orderService.getOrder(id);
     }
-
 }
