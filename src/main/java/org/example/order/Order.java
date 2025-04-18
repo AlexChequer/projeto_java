@@ -1,5 +1,6 @@
 package org.example.order;
 
+import jakarta.persistence.*;
 import org.example.client.Client;
 import org.example.stock.Item;
 
@@ -7,9 +8,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @OneToMany
     private Client client;
+    @ManyToOne
     private List<Item> items;
     private double total;
     private String paymentType;
