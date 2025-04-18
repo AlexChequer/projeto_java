@@ -9,9 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
+import java.net.URI;
 
 @RestController
 public class ClientController {
@@ -20,19 +19,17 @@ public class ClientController {
     private ClientService clientservice;
 
     @GetMapping("/client")
-    public ResponseEntity<List<Client>> getClients() { // aq define q o response entity espera esse tipo
+    public ResponseEntity<List<Client>> getClients() {
 
         List<Client> clients = clientservice.getClients();
 
-        if (clients.isEmpty())
-        {
+        if (clients.isEmpty()) {
             throw new ClientNotFoundException("no clients found");
         }
         return ResponseEntity.ok(clients);
     }
 
     @PostMapping("/client")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Client> saveClient(@RequestBody Client client) {
         if (client.getName() == null) {
             throw new NameRequiredException("name cant be null");
@@ -51,33 +48,26 @@ public class ClientController {
     @GetMapping("/client/{id}")
     public ResponseEntity<Client> getClient(@PathVariable Integer id) {
         Client client = clientservice.getClient(id);
-        if (client == null)
-        {
+        if (client == null) {
             throw new ClientNotFoundException("client not found");
-        } else
-        {
+        } else {
             return ResponseEntity.ok(client);
         }
     }
 
     @DeleteMapping("/client/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {
         try {
             clientservice.removeClient(id);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            throw new ClientNotFoundException("not found");
+        } catch (org.springframework.dao.EmptyResultDataAccessException ex) {
+            throw new ClientNotFoundException("client not found");
         }
     }
 
-    @PutMapping("client/{id}")
+    @PutMapping("/client/{id}")
     public ResponseEntity<Client> updateClient(@PathVariable Integer id, @RequestBody Client client) {
         Client updatedClient = clientservice.updateClient(id, client);
-        if (updatedClient == null)
-        {
-            throw new ClientNotFoundException("client not found");
-        }
         return ResponseEntity.ok(updatedClient);
     }
 }
