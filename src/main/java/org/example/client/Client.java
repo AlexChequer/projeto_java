@@ -1,15 +1,16 @@
 package org.example.client;
 
+import jakarta.persistence.*;
 import org.example.user.User;
-import javax.persistence.*;
 
 @Entity
 @Table(name = "clients")
 public class Client extends User {
 
-    protected Client() {
-        super();
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
 
     public Client(int id, String name, String email, String password)
     {
