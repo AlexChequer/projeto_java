@@ -48,7 +48,7 @@ public class AdminController {
         Admin createdAdmin = adminService.saveAdmin(newAdmin);
 
         URI location = URI.create("/admin/" + createdAdmin.getId());
-        return ResponseEntity.created(location).body(newAdmin);
+        return ResponseEntity.created(location).body(createdAdmin);
     }
 
     @GetMapping("/admin/{id}")
