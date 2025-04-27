@@ -1,20 +1,16 @@
-# Sistema de E-commerce
+# projeto_java
+Projeto de Java do 3o semestre de Ciência da Computação
 
-Sistema de e-commerce completo desenvolvido em Java com Spring Boot.
-
-## Funcionalidades
-
-- Gerenciamento de produtos e categorias
-- Sistema de carrinho de compras
-- Processamento de pedidos e pagamentos
-- Gerenciamento de clientes e administradores
-- Controle de estoque integrado
+Membros:
+-  Alex Chequer
+-  Gustavo Santana
+-  Gustavo Valente
 
 ## Requisitos
 
 - Java 17 ou superior
 - Maven
-- MySQL (a configuração padrão aponta para um banco de dados remoto)
+- MySQL
 
 ## Como executar
 
@@ -26,7 +22,7 @@ Sistema de e-commerce completo desenvolvido em Java com Spring Boot.
 ./mvn spring-boot:run
 ```
 
-### Executar os testes automáticos
+### Executar os testes 
 
 ```bash
 ./test.bat  # No Windows
@@ -86,4 +82,3 @@ Sistema de e-commerce completo desenvolvido em Java com Spring Boot.
 
 A documentação completa da API está disponível em:
 - `/swagger-ui.html` - Interface Swagger UI
-- `/api-docs` - Documentação OpenAPI em formato JSON
