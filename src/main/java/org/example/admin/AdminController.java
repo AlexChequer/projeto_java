@@ -6,6 +6,7 @@ import org.example.common.exception.NameRequiredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.example.dto.AdminCreateDTO;
 
 import java.util.List;
 import java.net.URI;
@@ -28,7 +29,7 @@ public class AdminController {
     };
 
     @PostMapping("/admin")
-    public ResponseEntity<Admin> saveAdmin(@RequestBody Admin admin)
+    public ResponseEntity<Admin> saveAdmin(@RequestBody AdminCreateDTO admin)
     {
         if (admin.getName() == null)
         {
@@ -39,10 +40,15 @@ public class AdminController {
             throw new EmailRequiredException("email is required");
         }
 
-        Admin newAdmin = adminService.saveAdmin(admin);
+        Admin newAdmin = new Admin();
+        newAdmin.setName(admin.getName());
+        newAdmin.setEmail(admin.getEmail());
+        newAdmin.setPassword(admin.getPassword());
 
-        URI location = URI.create("/admin/" + admin.getId());
-        return ResponseEntity.created(location).body(newAdmin);
+        Admin createdAdmin = adminService.saveAdmin(newAdmin);
+
+        URI location = URI.create("/admin/" + createdAdmin.getId());
+        return ResponseEntity.created(location).body(createdAdmin);
     }
 
     @GetMapping("/admin/{id}")

@@ -1,62 +1,56 @@
-package org.example.stock;
+package org.example.dto;
 
-import jakarta.persistence.*;
 
-@Entity
-public class Item {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class ItemCreateDTO {
     private String name;
     private double price;
     private int stock;
-    
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
-    private Category category;
-    
+    private int categoryId;
     private String description;
     private String imageUrl;
-
-    public int getId() {
-        return id;
+    
+    public ItemCreateDTO() {
     }
-
-    public void setId(int id) {
-        this.id = id;
+    
+    public ItemCreateDTO(String name, double price, int stock, int categoryId, String description, String imageUrl) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.categoryId = categoryId;
+        this.description = description;
+        this.imageUrl = imageUrl;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public void setName(String name) {
         this.name = name;
     }
-
+    
     public double getPrice() {
         return price;
     }
-
+    
     public void setPrice(double price) {
         this.price = price;
     }
-
+    
     public int getStock() {
         return stock;
     }
-
+    
     public void setStock(int stock) {
         this.stock = stock;
     }
     
-    public Category getCategory() {
-        return category;
+    public int getCategoryId() {
+        return categoryId;
     }
     
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
     
     public String getDescription() {
@@ -74,14 +68,4 @@ public class Item {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-    
-    // Método para reduzir estoque ao fazer uma compra
-    public boolean reduceStock(int amount) {
-        if (stock >= amount) {
-            stock -= amount;
-            return true;
-        }
-        return false;
-    }
 }
-

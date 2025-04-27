@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.example.dto.ClientCreateDTO;
 
 import java.util.List;
 import java.net.URI;
@@ -30,14 +31,16 @@ public class ClientController {
     }
 
     @PostMapping("/client")
-    public ResponseEntity<Client> saveClient(@RequestBody Client client) {
-        if (client.getName() == null) {
+    public ResponseEntity<Client> saveClient(@RequestBody ClientCreateDTO clientDTO) {
+        if (clientDTO.getName() == null) {
             throw new NameRequiredException("name cant be null");
         }
 
-        if (client.getEmail() == null) {
+        if (clientDTO.getEmail() == null) {
             throw new EmailRequiredException("email cannot be null");
         }
+
+        Client client = new Client(clientDTO.getName(), clientDTO.getEmail(), clientDTO.getPassword());
 
         Client newClient = clientservice.saveClient(client);
 

@@ -1,0 +1,3 @@
+@echo off
+echo Executando testes do sistema de e-commerce...
+mvn spring-boot:run -Dspring-boot.run.profiles=test
