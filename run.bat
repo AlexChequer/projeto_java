@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando o sistema de e-commerce...
+mvn spring-boot:run

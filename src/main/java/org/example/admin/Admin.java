@@ -6,18 +6,25 @@ import org.example.user.User;
 @Entity
 @Table(name = "admins")
 public class Admin extends User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    public Admin(int id, String name, String email, String password)
-    {
-        super(id, name, email, password);
+    
+    public Admin() {
+        super("", "", "");
     }
 
+    public Admin(String name, String email, String password)
+    {
+        super(name, email, password);
+    }
+    
+    public Admin(int id, String name, String email, String password)
+    {
+        super(name, email, password);
+        setId(id);
+    }
+
+    @Override
     public String getRole()
     {
         return "ADMIN";
     }
-
 }
