@@ -2,8 +2,10 @@ package org.example.client;
 
 
 import org.example.client.exception.ClientNotFoundException;
+import org.example.common.exception.AtleastOneException;
 import org.example.common.exception.EmailRequiredException;
 import org.example.common.exception.NameRequiredException;
+import org.example.dto.ClientUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,9 +71,37 @@ public class ClientController {
     }
 
     @PutMapping("/client/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable Integer id, @RequestBody Client client) {
-        Client updatedClient = clientservice.updateClient(id, client);
-        return ResponseEntity.ok(updatedClient);
+    public ResponseEntity<Client> updateClient(@PathVariable Integer id, @RequestBody ClientUpdateDTO client) {
+        Client existing = clientservice.getClient(id);
+        boolean hasName = false;
+        boolean hasEmail = false;
+
+        if (existing == null) {
+            throw new ClientNotFoundException("Existing client not found");
+        }
+
+        if (!(client.getName() == null)) {
+            hasName = true;
+        }
+
+        if (!(client.getEmail() == null)) {
+            hasEmail = true;
+        }
+
+        if (!hasEmail && !hasName) {
+            throw new AtleastOneException("At least one field is necessary");
+        }
+
+        if (hasName) {
+            existing.setName(client.getName());
+        }
+
+        if (hasEmail) {
+            existing.setEmail(client.getEmail());
+        }
+
+        Client updated = clientservice.saveClient(existing);
+        return ResponseEntity.ok(updated);
     }
 }
 

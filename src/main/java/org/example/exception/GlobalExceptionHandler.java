@@ -56,4 +56,15 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorMessage> handleAtleastOneExceptions(Exception ex, WebRequest request)
+    {
+        ErrorMessage errorMessage = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD REQUEST ERROR: " + "At least one field necessary to continue",
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
 }
