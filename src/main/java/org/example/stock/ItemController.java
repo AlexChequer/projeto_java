@@ -43,18 +43,17 @@ public class ItemController {
         newItem.setStock(item.getStock());
         newItem.setImageUrl(item.getImageUrl());
 
-        // TODO: IMPLEMENTAR ISSO AQ DO JEITO CERTO. TA QUEBRANDO O TESTE QND USO ISSO, TEMQ ACHAR OUTRO JEITO DE PERSISTIR NO TESTE
-        // int categoryId = item.getCategoryId();
-        // try {
-        //     Category category = categoryService.getCategoryById(categoryId);
-        //     newItem.setCategory(category);
-        // } catch (CategoryNotFoundException e) {
-            
-        // }
-        // Category category = categoryService.getCategoryById(categoryId);
-        // if ( category == null ) {
-        //     throw new CategoryNotFoundException("category with id " + categoryId + " not found");
-        // }
+        // Associando a categoria ao item
+        if (item.getCategoryId() > 0) {
+            try {
+                Category category = categoryService.getCategoryById(item.getCategoryId());
+                newItem.setCategory(category);
+            } catch (Exception e) {
+                // Caso a categoria não seja encontrada, continue sem associar
+                System.out.println("Categoria não encontrada: " + e.getMessage());
+            }
+        }
+        
         Item createdItem = itemService.postItem(newItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
     }

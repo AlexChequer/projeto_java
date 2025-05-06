@@ -13,9 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -48,10 +46,7 @@ public class OrderService {
             }
             
             existingItem.setStock(existingItem.getStock() + payload.getStock());
-            existingItem.setPrice(
-                    existingItem.getPrice() +
-                            payload.getPrice() * payload.getStock()
-            );
+            existingItem.setPrice(existingItem.getPrice() + payload.getPrice() * payload.getStock());
         } else {
             Item stockItem = itemService.getItem(payload.getId());
             if (stockItem.getStock() < payload.getStock()) {
@@ -59,8 +54,17 @@ public class OrderService {
                         "Not enough stock. Available: " + stockItem.getStock());
             }
             
-            payload.setPrice(payload.getPrice() * payload.getStock());
-            order.setItem(payload);
+            Item orderItem = new Item();
+            orderItem.setName(stockItem.getName());
+            orderItem.setPrice(stockItem.getPrice() * payload.getStock());
+            orderItem.setStock(payload.getStock());
+            orderItem.setCategory(stockItem.getCategory());
+            orderItem.setDescription(stockItem.getDescription());
+            orderItem.setImageUrl(stockItem.getImageUrl());
+            
+            order.setItem(orderItem);
+            
+            order.getItemQuantities().put(stockItem.getId(), payload.getStock());
         }
 
         recalculateOrderTotal(order);
@@ -117,21 +121,13 @@ public class OrderService {
                         ". Available: " + stockItem.getStock());
             }
             
-            Item orderItem = new Item();
-            orderItem.setName(originalItem.getName());
-            orderItem.setPrice(originalItem.getPrice() * cartItem.getQuantity());
-            orderItem.setStock(cartItem.getQuantity());
-            if (originalItem.getCategory() != null) {
-                orderItem.setCategory(originalItem.getCategory());
-            }
-            orderItem.setDescription(originalItem.getDescription());
-            orderItem.setImageUrl(originalItem.getImageUrl());
-            
-            savedOrder.setItem(orderItem);
-            
             stockItem.setStock(stockItem.getStock() - cartItem.getQuantity());
             itemService.putItem(stockItem.getId(), stockItem);
+            
+            savedOrder.addItem(stockItem, cartItem.getQuantity());
         }
+        
+        recalculateOrderTotal(savedOrder);
         
         savedOrder.setPaymentDate(LocalDateTime.now());
         savedOrder.setStatus("PAID");
@@ -180,9 +176,13 @@ public class OrderService {
         
         if ("PAID".equals(order.getStatus())) {
             for (Item orderItem : order.getItems()) {
-                Item stockItem = itemService.getItem(orderItem.getId());
-                stockItem.setStock(stockItem.getStock() + orderItem.getStock());
-                itemService.putItem(stockItem.getId(), stockItem);
+                try {
+                    Item stockItem = itemService.getItem(orderItem.getId());
+                    stockItem.setStock(stockItem.getStock() + orderItem.getStock());
+                    itemService.putItem(stockItem.getId(), stockItem);
+                } catch (Exception e) {
+                    System.out.println("Item não encontrado ao restaurar estoque: " + e.getMessage());
+                }
             }
         }
         

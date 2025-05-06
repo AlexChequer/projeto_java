@@ -20,9 +20,14 @@ public class Order {
     @JoinColumn(name = "client_id")
     private Client client;
     
+    // Revertido para o mapeamento original compatível com o esquema do banco existente
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private List<Item> items;
+    
+    // Usado para rastrear quantidades sem criar tabela adicional
+    @Transient
+    private java.util.Map<Integer, Integer> itemQuantities = new java.util.HashMap<>();
     
     private double total;
     private String paymentType;
@@ -71,7 +76,45 @@ public class Order {
     }
 
     public void setItem(Item item) {
-        this.items.add(item);
+        // Guarda o ID original para referência
+        int originalId = item.getId();
+        
+        // Cria uma cópia do item para o pedido
+        Item orderItem = new Item();
+        orderItem.setName(item.getName());
+        orderItem.setPrice(item.getPrice());
+        orderItem.setStock(item.getStock());
+        orderItem.setCategory(item.getCategory());
+        orderItem.setDescription(item.getDescription());
+        orderItem.setImageUrl(item.getImageUrl());
+        
+        this.items.add(orderItem);
+        
+        // Armazena o ID original para rastreamento
+        itemQuantities.put(originalId, itemQuantities.getOrDefault(originalId, 0) + 1);
+    }
+    
+    public void addItem(Item item, int quantity) {
+        // Guarda o ID original para referência
+        int originalId = item.getId();
+        
+        // Cria uma cópia do item para o pedido com preço total já calculado
+        Item orderItem = new Item();
+        orderItem.setName(item.getName());
+        orderItem.setPrice(item.getPrice() * quantity);
+        orderItem.setStock(quantity); // Usamos o campo stock para representar a quantidade
+        orderItem.setCategory(item.getCategory());
+        orderItem.setDescription(item.getDescription());
+        orderItem.setImageUrl(item.getImageUrl());
+        
+        this.items.add(orderItem);
+        
+        // Armazena o ID original para rastreamento
+        itemQuantities.put(originalId, itemQuantities.getOrDefault(originalId, 0) + quantity);
+    }
+    
+    public int getItemQuantity(int originalItemId) {
+        return itemQuantities.getOrDefault(originalItemId, 0);
     }
 
     public double getTotal() {
@@ -123,5 +166,9 @@ public class Order {
             return true;
         }
         return false;
+    }
+    
+    public java.util.Map<Integer, Integer> getItemQuantities() {
+        return this.itemQuantities;
     }
 }
