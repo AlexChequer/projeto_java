@@ -133,6 +133,8 @@ public class OrderService {
             itemService.putItem(stockItem.getId(), stockItem);
         }
         
+        savedOrder.setPaymentDate(LocalDateTime.now());
+        savedOrder.setStatus("PAID");
         savedOrder = orderRepository.save(savedOrder);
         
         cart.clear();
